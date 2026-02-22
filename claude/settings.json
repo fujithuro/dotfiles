@@ -1,5 +1,6 @@
 {
   "language": "japanese",
+  "cleanupPeriodDays": 3650,
   "permissions": {
     "allow": [
       "Read",
