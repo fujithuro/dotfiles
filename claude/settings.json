@@ -1,5 +1,9 @@
 {
   "language": "japanese",
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/scripts/statusline.sh"
+  },
   "cleanupPeriodDays": 3650,
   "permissions": {
     "allow": [

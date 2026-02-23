@@ -9,6 +9,7 @@ mkdir -p ~/.claude
 ln -sf "$DOTFILES_DIR/claude/CLAUDE.md" ~/.claude/CLAUDE.md
 ln -sf "$DOTFILES_DIR/claude/skills" ~/.claude/skills
 ln -sf "$DOTFILES_DIR/claude/settings.json" ~/.claude/settings.json
+ln -sf "$DOTFILES_DIR/claude/scripts" ~/.claude/scripts
 
 # Claude Code MCP Servers
 claude mcp add-json --scope user github '{
