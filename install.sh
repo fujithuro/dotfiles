@@ -6,10 +6,10 @@ DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # Claude Code
 mkdir -p ~/.claude
-ln -sf "$DOTFILES_DIR/claude/CLAUDE.md" ~/.claude/CLAUDE.md
-ln -sf "$DOTFILES_DIR/claude/skills" ~/.claude/skills
-ln -sf "$DOTFILES_DIR/claude/settings.json" ~/.claude/settings.json
-ln -sf "$DOTFILES_DIR/claude/scripts" ~/.claude/scripts
+ln -sfn "$DOTFILES_DIR/claude/CLAUDE.md" ~/.claude/CLAUDE.md
+ln -sfn "$DOTFILES_DIR/claude/skills" ~/.claude/skills
+ln -sfn "$DOTFILES_DIR/claude/settings.json" ~/.claude/settings.json
+ln -sfn "$DOTFILES_DIR/claude/scripts" ~/.claude/scripts
 
 # Claude Code MCP Servers
 # NOTE: claude mcp add-json は既存サーバーが存在するとエラーになるが、
