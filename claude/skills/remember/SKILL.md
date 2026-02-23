@@ -134,4 +134,3 @@ jq -r 'select(.type=="user") | select(.message.content | type == "string") | sel
 - JSONLファイルは大きくなりがちなので、全文読み込みではなくGrepで絞り込んでから該当箇所を読むこと
 - タイムスタンプはUTCで記録されている。特に指定されない限り、ユーザーはタイムゾーンを"Asia/Tokyo"（UTC+9）で認識しているため、変換して伝えること
 - デフォルトでは30日でJSONLが自動削除される（cleanupPeriodDays設定で変更可能）
-- **Bashコマンドにパイプ (`|`) やリダイレクト (`2>/dev/null`) を付けると、`allowed-tools` のパターンにマッチしなくなり許可を求められる（既知バグ）。** jqやスクリプトの実行時はパイプ・リダイレクトを使わないこと
