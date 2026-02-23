@@ -1,7 +1,7 @@
 ---
 name: remember
 description: "過去の会話履歴を検索する際のルール"
-allowed-tools: Read, Glob, Grep, Bash(find *), Bash(wc *), Bash(jq *)
+allowed-tools: Read, Glob, Grep, Bash(find *), Bash(wc *), Bash(jq *), Bash(~/.claude/skills/remember/*.sh *)
 ---
 
 # 過去の会話履歴を検索する際のルール
@@ -69,25 +69,49 @@ allowed-tools: Read, Glob, Grep, Bash(find *), Bash(wc *), Bash(jq *)
 - 時期の手がかりがある場合、ファイルの更新日時で絞り込む
 - 手がかりが少ない場合は全JSONLを対象にする
 
-### 2. キーワードで検索
+### 2. キーワードでファイルを特定する
 
 Grepで `.jsonl` ファイルを横断検索する。まずはメインセッション（ルート直下）から検索し、必要に応じてサブエージェントも含める。
+
+**重要**: JSONLは1行が非常に長いため、Grepの `content` モードでは `[Omitted long matching line]` となり内容を確認できない。Grepは **`files_with_matches` モード（デフォルト）でファイル特定のみ**に使い、内容の抽出はjqで行うこと。
 
 ```
 Grep pattern="キーワード" path="~/.claude/projects/" glob="*/*.jsonl"
 ```
 
-### 3. jqで構造的に抽出する
+検索対象のプロジェクトについて:
+- ユーザーが特定プロジェクトに言及していればそのディレクトリに絞る
+- **グローバル設定（CLAUDE.md、skills、settings.json等）やプロジェクト横断的なトピック**の場合は、全プロジェクトディレクトリを対象にする（ホームディレクトリ `-Users-fujitakyohei/` も忘れずに）
 
-Grepでファイルを特定した後、jqを使ってJSONの構造を活用した抽出を行う。
+### 3. セッションの概要を素早く把握する
+
+ヒットしたファイルが複数ある場合や、どのセッションに目的の会話があるか分からない場合は、`session-overview.sh` で各セッションの最初のユーザー発言を一覧して概要を把握する。
 
 ```bash
-# ユーザーのテキスト発言を抽出（contentがstring型の場合）
-jq -r 'select(.type=="user") | select(.message.content | type == "string") | .message.content' file.jsonl
+~/.claude/skills/remember/session-overview.sh ~/.claude/projects/{dir}
+```
 
-# ユーザーのテキスト発言を抽出（contentが配列型の場合）
-jq -r 'select(.type=="user") | select(.message.content | type == "array") | .message.content[] | select(.type == "text") | .text' file.jsonl
+### 4. セッション内の発言を抽出する
 
+対象セッションを特定した後、`session-messages.sh` でuser/assistantの発言を抽出する。
+
+```bash
+# user発言のみ抽出
+~/.claude/skills/remember/session-messages.sh <jsonl-file> user
+
+# assistant応答のみ抽出
+~/.claude/skills/remember/session-messages.sh <jsonl-file> assistant
+
+# 両方抽出（デフォルト）
+~/.claude/skills/remember/session-messages.sh <jsonl-file>
+
+# 最大文字数を指定（デフォルト: 300）
+~/.claude/skills/remember/session-messages.sh <jsonl-file> both 500
+```
+
+スクリプトでカバーできない検索（キーワードフィルタ、タイムスタンプ抽出等）にはjqを直接使う。出力が膨大になりがちなので `.message.content[:300]` のようにスライスで切り詰めること。
+
+```bash
 # summaryを抽出
 jq -r 'select(.type == "summary") | .summary' file.jsonl
 
@@ -95,11 +119,11 @@ jq -r 'select(.type == "summary") | .summary' file.jsonl
 jq -r 'select(.type=="user") | select(.message.content | type == "string") | select(.message.content | test("キーワード")) | "\(.timestamp) \(.message.content[:100])"' file.jsonl
 ```
 
-### 4. コンテキストを確認
+### 5. コンテキストを確認
 
 ヒットしたファイルの前後のメッセージを読み、会話の文脈を把握する。
 
-### 5. summaryの活用
+### 6. summaryの活用
 
 長いセッションでは `type: "summary"` エントリにCompacting時の要約がある。セッション全体の概要を素早く把握するのに有用。
 
