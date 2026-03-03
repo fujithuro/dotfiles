@@ -44,5 +44,8 @@
       "mcp__github__search_repositories",
       "mcp__github__search_users"
     ]
+  },
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   }
 }
