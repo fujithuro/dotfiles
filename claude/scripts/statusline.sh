@@ -15,7 +15,5 @@ BAR=$(printf "%${FILLED}s" | tr ' ' '▓')$(printf "%${EMPTY}s" | tr ' ' '░')
 # Gitブランチ
 BRANCH=$(git -C "$DIR_RAW" branch --show-current 2>/dev/null || echo "-")
 
-# 1行目: モデル | コンテキスト使用率 | コスト | 経過時間
-echo "[$MODEL] $BAR $PCT% | \$$COST_FMT | ${DURATION_MIN}min"
-# 2行目: ディレクトリ | ブランチ
-echo "$DIR | $BRANCH"
+# モデル | ディレクトリ | ブランチ | コンテキスト使用率
+echo "[$MODEL] $DIR | $BRANCH | $BAR $PCT%"
